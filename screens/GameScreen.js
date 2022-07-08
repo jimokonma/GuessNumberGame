@@ -20,12 +20,17 @@ let maxBoundary = 100;
 function GameScreen({ userNumber, onGameOver }) {
   const initialGuess = generateRandomBetween(1, 100, userNumber);
   const [currenGuess, setCurrentGuess] = useState(initialGuess);
-
+  const [guessRounds, setGuessRounds] = useState([initialGuess]);
   useEffect(() => {
     if (currenGuess === userNumber) {
-      onGameOver();
+      onGameOver(guessRounds.length);
     }
   }, [currenGuess, userNumber, onGameOver]);
+
+  useEffect(() => {
+    minBoundary = 1;
+    maxBoundary = 100;
+  }, []);
 
   const nextGuessHandler = (direction) => {
     //direction => 'greater','lower'
@@ -52,7 +57,12 @@ function GameScreen({ userNumber, onGameOver }) {
       currenGuess
     );
     setCurrentGuess(newRandNumber);
+    setGuessRounds((prev) => {
+      return [newRandNumber, ...prev];
+    });
   };
+
+  const guessRoundsListLength = guessRounds.length;
 
   return (
     <View style={styles.mainContainer}>
@@ -71,6 +81,16 @@ function GameScreen({ userNumber, onGameOver }) {
             <Ionicons name="add" size={24} color="white" />
           </Buttons>
         </View>
+      </View>
+      <View>
+        {guessRounds.map((item, index) => {
+          return (
+            <View key={item} style={styles.listItem}>
+              <Text>#{guessRoundsListLength - index}</Text>
+              <Text>Opponent's Guess {item}</Text>
+            </View>
+          );
+        })}
       </View>
     </View>
   );
@@ -108,6 +128,22 @@ const styles = StyleSheet.create({
   },
   buttonContainer: {
     flexDirection: "row",
+  },
+  listItem: {
+    borderColor: Colors.primary800,
+    borderWidth: 1,
+    borderRadius: 40,
+    padding: 12,
+    marginVertical: 8,
+    marginHorizontal: 30,
+    flexDirection: "row",
+    justifyContent: "space-between",
+    backgroundColor: Colors.accent500,
+    elevation: 4,
+    shadowColor: "black",
+    shadowOffset: { width: 4, height: 0 },
+    shadowOpacity: 0.25,
+    shadowRadius: 3,
   },
 });
 
